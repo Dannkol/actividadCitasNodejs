@@ -21,3 +21,8 @@ INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id
 INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
 INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
 WHERE t2.usu_id = 1 AND t1.cit_estado = 1;
+
+
+SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 
+INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t1.cit_fecha = '2023-08-13'
+ORDER BY t1.cit_fecha ASC;
