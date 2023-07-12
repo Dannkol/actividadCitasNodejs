@@ -84,6 +84,30 @@ router.get("/medicos/:esp", async (req, res) => {
 router.get("/usuario/citas/:id", async (req, res) => {
   const connection = await getConnection();
   try {
+    const query_pacientes_all_desc = `SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t2.usu_id = ${req.params.id} AND t1.cit_estado = 1
+    ORDER BY t1.cit_fecha ASC LIMIT 1 ;`;
+
+    const [pacientes_all_desc] = await connection.execute(
+      query_pacientes_all_desc
+    );
+
+    let obj = {
+      mensaje: "citas ordered by cit_fecha DESC",
+      inventario: pacientes_all_desc,
+    };
+
+    return res.status(200).json(obj);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Error del servidor ${error.errno}` });
+  } finally {
+    connection.end();
+  }
+});
+
+router.get("/usuario/medico/:id", async (req, res) => {
+  const connection = await getConnection();
+  try {
     const query_pacientes_all_desc = `SELECT * FROM cita AS t1 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t2.usu_id = ${req.params.id};`;
 
     const [pacientes_all_desc] = await connection.execute(
