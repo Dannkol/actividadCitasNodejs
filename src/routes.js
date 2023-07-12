@@ -33,6 +33,31 @@ router.get("/pacientes", async (req, res) => {
   }
 });
 
+router.get("/citas", async (req, res) => {
+  const connection = await getConnection();
+  try {
+    const query_pacientes_all_desc = `SELECT * FROM cita ORDER BY cit_fecha DESC;`;
+
+    const [pacientes_all_desc] = await connection.execute(
+      query_pacientes_all_desc
+    );
+
+    let obj = {
+      mensaje: "citas ordered by cit_fecha DESC",
+      inventario: pacientes_all_desc,
+    };
+
+    return res.status(200).json(obj);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Error del servidor ${error.errno}` });
+  } finally {
+    connection.end();
+  }
+});
+
+
+
 
 
 export default router;
