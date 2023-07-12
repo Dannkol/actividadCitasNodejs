@@ -1,8 +1,8 @@
 import { plainToClass } from "class-transformer";
-import { IdsDTO } from "../DTO/ids.js";
+import { DateDTO } from "../DTO/date.js";
 
-const Validar_id = (req, res, next) => {
-  const validaciones = plainToClass(IdsDTO, req.params, {
+const Validar_fecha = (req, res, next) => {
+  const validaciones = plainToClass(DateDTO, req.params, {
     excludeExtraneousValues: true,
   });
 
@@ -15,4 +15,4 @@ const Validar_id = (req, res, next) => {
   next();
 };
 
-export default Validar_id;
+export default Validar_fecha;

@@ -3,10 +3,12 @@ import express from "express";
 import mysql from "mysql2/promise";
 import dbConfig from "./config/dbconfig.js";
 
-
 /*  middleware */
 
-import Validar_id from "./middleware/DTO_id.js"
+import Validar_id from "./middleware/DTO_id.js";
+import Validar_especialistas from "./middleware/DTO_Especialiades.js";
+import Validar_fecha from "./middleware/DTO_Fecha.js";
+import Validar_fecha_id from "./middleware/DTO_Fecha_id.js";
 
 /* instacia de la conexion a la base de datos */
 const getConnection = async () => {
@@ -26,7 +28,7 @@ router.get("/pacientes", async (req, res) => {
 
     let obj = {
       mensaje: "Uusuarios ordered by usu_nombre ascending",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -49,7 +51,7 @@ router.get("/citas", async (req, res) => {
 
     let obj = {
       mensaje: "citas ordered by cit_fecha DESC",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -61,8 +63,7 @@ router.get("/citas", async (req, res) => {
   }
 });
 
-
-router.get("/medicos/:esp", async (req, res) => {
+router.get("/medicos/:esp", Validar_especialistas, async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t1.med_nombreCompleto , t2.esp_nombre FROM medico AS t1 INNER JOIN especialidad AS t2 ON t1.med_especialidad = t2.esp_id WHERE t2.esp_nombre = "${req.params.esp}"; `;
@@ -73,7 +74,7 @@ router.get("/medicos/:esp", async (req, res) => {
 
     let obj = {
       mensaje: "especialidades por medico",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -85,8 +86,7 @@ router.get("/medicos/:esp", async (req, res) => {
   }
 });
 
-
-router.get("/usuario/citas/:id", Validar_id,async (req, res) => {
+router.get("/usuario/citas/:id", Validar_id, async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t2.usu_id = ${req.params.id} AND t1.cit_estado = 1
@@ -98,7 +98,7 @@ router.get("/usuario/citas/:id", Validar_id,async (req, res) => {
 
     let obj = {
       mensaje: "Citas de un usuario",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -110,7 +110,7 @@ router.get("/usuario/citas/:id", Validar_id,async (req, res) => {
   }
 });
 
-router.get("/usuario/medico/:id", Validar_id ,async (req, res) => {
+router.get("/usuario/medico/:id", Validar_id, async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha FROM cita AS t1 
@@ -125,7 +125,7 @@ router.get("/usuario/medico/:id", Validar_id ,async (req, res) => {
 
     let obj = {
       mensaje: "medicos de un usuario",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -137,15 +137,14 @@ router.get("/usuario/medico/:id", Validar_id ,async (req, res) => {
   }
 });
 
-
-router.get("/usuario/consultorio/:id", Validar_id ,async (req, res) => {
+router.get("/usuario/consultorio/:id", Validar_id, async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha , t4.cons_nombre FROM cita AS t1 
     INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id 
     INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
     INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
-    WHERE t2.usu_id = ${req.params.id} AND t1.cit_estado = 1;`;
+    WHERE t2.usu_id = ${req.params.id};`;
 
     const [pacientes_all_desc] = await connection.execute(
       query_pacientes_all_desc
@@ -153,7 +152,7 @@ router.get("/usuario/consultorio/:id", Validar_id ,async (req, res) => {
 
     let obj = {
       mensaje: "Consultorios de un usuario",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -165,7 +164,7 @@ router.get("/usuario/consultorio/:id", Validar_id ,async (req, res) => {
   }
 });
 
-router.get("/citas/fecha/:date", async (req, res) => {
+router.get("/citas/fecha/:date", Validar_fecha ,async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 
@@ -178,7 +177,7 @@ router.get("/citas/fecha/:date", async (req, res) => {
 
     let obj = {
       mensaje: "citas por fecha",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -189,7 +188,6 @@ router.get("/citas/fecha/:date", async (req, res) => {
     connection.end();
   }
 });
-
 
 router.get("/medico/consultorio", async (req, res) => {
   const connection = await getConnection();
@@ -204,7 +202,7 @@ router.get("/medico/consultorio", async (req, res) => {
 
     let obj = {
       mensaje: "todos los medicos y sus consultorios",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -216,7 +214,7 @@ router.get("/medico/consultorio", async (req, res) => {
   }
 });
 
-router.get("/medico/:id/citas/:date", async (req, res) => {
+router.get("/medico/:id/citas/:date", Validar_fecha_id ,async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `
@@ -232,7 +230,7 @@ WHERE t1.cit_fecha = '${req.params.date}' AND t3.med_nroMatriculaProsional = ${r
 
     let obj = {
       mensaje: "cantidad de Citas",
-      inventario: pacientes_all_desc,
+      data: pacientes_all_desc,
     };
 
     return res.status(200).json(obj);
@@ -243,5 +241,8 @@ WHERE t1.cit_fecha = '${req.params.date}' AND t3.med_nroMatriculaProsional = ${r
     connection.end();
   }
 });
+
+
+
 
 export default router;

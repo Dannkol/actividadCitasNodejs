@@ -1,7 +1,7 @@
 import { Expose, Transform } from "class-transformer";
 
 
-export class InventarioPost {
+export class EspDTO {
 
     @Expose({ name: "esp" })
     @Transform(({ obj }) => {
