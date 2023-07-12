@@ -185,4 +185,30 @@ router.get("/citas/fecha/:date", async (req, res) => {
   }
 });
 
+
+router.get("/medico/consultorio", async (req, res) => {
+  const connection = await getConnection();
+  try {
+    const query_pacientes_all_desc = `SELECT t3.med_nombreCompleto , t4.cons_nombre FROM cita AS t1 
+    INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+    INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo;`;
+
+    const [pacientes_all_desc] = await connection.execute(
+      query_pacientes_all_desc
+    );
+
+    let obj = {
+      mensaje: "citas ordered by cit_fecha DESC",
+      inventario: pacientes_all_desc,
+    };
+
+    return res.status(200).json(obj);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Error del servidor ${error.errno}` });
+  } finally {
+    connection.end();
+  }
+});
+
 export default router;
