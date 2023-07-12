@@ -108,7 +108,11 @@ router.get("/usuario/citas/:id", async (req, res) => {
 router.get("/usuario/medico/:id", async (req, res) => {
   const connection = await getConnection();
   try {
-    const query_pacientes_all_desc = `SELECT * FROM cita AS t1 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t2.usu_id = ${req.params.id};`;
+    const query_pacientes_all_desc = `SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha FROM cita AS t1 
+    INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id 
+    INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+    WHERE t3.med_nroMatriculaProsional = ${req.params.id} AND t1.cit_estado = 1;
+    `;
 
     const [pacientes_all_desc] = await connection.execute(
       query_pacientes_all_desc

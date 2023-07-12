@@ -10,7 +10,7 @@ SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 INNER JOIN usuarios AS t2 ON 
 ORDER BY t1.cit_fecha ASC LIMIT 1 ;
 
 
-SELECT * FROM cita AS t1 
+SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha FROM cita AS t1 
 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id 
 INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
-WHERE t3.med_nroMatriculaProsional = 1345;
+WHERE t3.med_nroMatriculaProsional = 1345 AND t1.cit_estado = 1;
