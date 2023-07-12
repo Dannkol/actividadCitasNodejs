@@ -272,6 +272,34 @@ WHERE t2.usu_id = 1 AND t1.cit_estado = 1;
   }
 });
 
+router.get("/usuarios/genero/:id", Validar_id ,async (req, res) => {
+  const connection = await getConnection();
+  try {
+    const query_pacientes_all_desc = `
+    SELECT t1.cit_fecha as "fecha" , t4.cons_nombre as "consultorio", t2.usu_nombre as "nombre", t5.gen_nombre as "genero" FROM cita AS t1 
+    INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id 
+    INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+    INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
+    INNER JOIN genero AS t5 ON t5.gen_id = t2.usu_genero
+    WHERE t2.usu_genero = ${req.params.id} AND t1.cit_estado = 1;
+    `;
 
+    const [pacientes_all_desc] = await connection.execute(
+      query_pacientes_all_desc
+    );
+
+    let obj = {
+      mensaje: "cantidad de Citas",
+      data: pacientes_all_desc,
+    };
+
+    return res.status(200).json(obj);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Error del servidor ${error.errno}` });
+  } finally {
+    connection.end();
+  }
+});
 
 export default router;
