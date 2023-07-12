@@ -3,6 +3,11 @@ import express from "express";
 import mysql from "mysql2/promise";
 import dbConfig from "./config/dbconfig.js";
 
+
+/*  middleware */
+
+import Validar_id from "./middleware/DTO_id.js"
+
 /* instacia de la conexion a la base de datos */
 const getConnection = async () => {
   return await mysql.createConnection(dbConfig);
@@ -81,7 +86,7 @@ router.get("/medicos/:esp", async (req, res) => {
 });
 
 
-router.get("/usuario/citas/:id", async (req, res) => {
+router.get("/usuario/citas/:id", Validar_id,async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre, t1.cit_fecha FROM cita AS t1 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id WHERE t2.usu_id = ${req.params.id} AND t1.cit_estado = 1
@@ -105,7 +110,7 @@ router.get("/usuario/citas/:id", async (req, res) => {
   }
 });
 
-router.get("/usuario/medico/:id", async (req, res) => {
+router.get("/usuario/medico/:id", Validar_id ,async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha FROM cita AS t1 
@@ -133,7 +138,7 @@ router.get("/usuario/medico/:id", async (req, res) => {
 });
 
 
-router.get("/usuario/consultorio/:id", async (req, res) => {
+router.get("/usuario/consultorio/:id", Validar_id ,async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `SELECT t2.usu_nombre , t3.med_nombreCompleto , t1.cit_fecha , t4.cons_nombre FROM cita AS t1 
@@ -211,15 +216,14 @@ router.get("/medico/consultorio", async (req, res) => {
   }
 });
 
-router.get("/medico/:idmec/citas/:date", async (req, res) => {
+router.get("/medico/:id/citas/:date", async (req, res) => {
   const connection = await getConnection();
   try {
     const query_pacientes_all_desc = `
     SELECT COUNT(t3.med_nombreCompleto) AS "Cantidad_citas" FROM cita AS t1 
 INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
 INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
-WHERE t1.cit_fecha = '${req.params.date}' AND t3.med_nroMatriculaProsional = ${req.params.idmec};
-
+WHERE t1.cit_fecha = '${req.params.date}' AND t3.med_nroMatriculaProsional = ${req.params.id};
     `;
 
     const [pacientes_all_desc] = await connection.execute(
