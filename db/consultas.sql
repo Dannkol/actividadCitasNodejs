@@ -31,3 +31,9 @@ ORDER BY t1.cit_fecha ASC;
 SELECT t3.med_nombreCompleto , t4.cons_nombre FROM cita AS t1 
 INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
 INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo;
+
+
+SELECT COUNT(t3.med_nombreCompleto) FROM cita AS t1 
+INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
+WHERE t1.cit_fecha = '2023-08-13' AND t3.med_nroMatriculaProsional = 1345;

@@ -67,7 +67,7 @@ router.get("/medicos/:esp", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "especialidades por medico",
       inventario: pacientes_all_desc,
     };
 
@@ -92,7 +92,7 @@ router.get("/usuario/citas/:id", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "Citas de un usuario",
       inventario: pacientes_all_desc,
     };
 
@@ -119,7 +119,7 @@ router.get("/usuario/medico/:id", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "medicos de un usuario",
       inventario: pacientes_all_desc,
     };
 
@@ -147,7 +147,7 @@ router.get("/usuario/consultorio/:id", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "Consultorios de un usuario",
       inventario: pacientes_all_desc,
     };
 
@@ -172,7 +172,7 @@ router.get("/citas/fecha/:date", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "citas por fecha",
       inventario: pacientes_all_desc,
     };
 
@@ -198,7 +198,36 @@ router.get("/medico/consultorio", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "citas ordered by cit_fecha DESC",
+      mensaje: "todos los medicos y sus consultorios",
+      inventario: pacientes_all_desc,
+    };
+
+    return res.status(200).json(obj);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: `Error del servidor ${error.errno}` });
+  } finally {
+    connection.end();
+  }
+});
+
+router.get("/medico/:idmec/citas/:date", async (req, res) => {
+  const connection = await getConnection();
+  try {
+    const query_pacientes_all_desc = `
+    SELECT COUNT(t3.med_nombreCompleto) AS "Cantidad_citas" FROM cita AS t1 
+INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
+WHERE t1.cit_fecha = '${req.params.date}' AND t3.med_nroMatriculaProsional = ${req.params.idmec};
+
+    `;
+
+    const [pacientes_all_desc] = await connection.execute(
+      query_pacientes_all_desc
+    );
+
+    let obj = {
+      mensaje: "cantidad de Citas",
       inventario: pacientes_all_desc,
     };
 
