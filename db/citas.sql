@@ -145,7 +145,7 @@ CREATE TABLE `usuarios` (
   `usu_e-mail` varchar(50) NOT NULL,
   `usu_tipodoc` int NOT NULL,
   `usu_genero` int NOT NULL,
-  `usu_acudiente` int NOT NULL
+  `usu_acudiente` int DEFAULT NULL
 );
 
 
@@ -226,3 +226,5 @@ ALTER TABLE `usuarios`
   ADD CONSTRAINT `fk_acudiente` FOREIGN KEY (`usu_acudiente`) REFERENCES `acudiente` (`acu_codigo`),
   ADD CONSTRAINT `fk_genero` FOREIGN KEY (`usu_genero`) REFERENCES `genero` (`gen_id`),
   ADD CONSTRAINT `fk_tipodoc` FOREIGN KEY (`usu_tipodoc`) REFERENCES `tipo_documento` (`tipdoc_id`);
+
+

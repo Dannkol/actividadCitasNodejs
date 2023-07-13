@@ -45,3 +45,10 @@ INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
 INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
 INNER JOIN genero AS t5 ON t5.gen_id = t2.usu_genero
 WHERE t2.usu_genero = 4 AND t1.cit_estado = 1;
+
+
+
+SELECT t2.usu_nombre, t1.cit_fecha , t3.med_nombreCompleto FROM cita AS t1 
+INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id
+INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
+WHERE t1.cit_estado = 4 AND t1.cit_fecha >= '2023-10-01' AND t1.cit_fecha <= '2023-10-31';
