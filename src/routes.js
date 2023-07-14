@@ -249,11 +249,11 @@ router.get(
     const connection = await getConnection();
     try {
       const query_pacientes_all_desc = `
-    SELECT t1.cit_fecha , t4.cons_nombre FROM cita AS t1 
+    SELECT t1.cit_fecha as "fecha" , t4.cons_nombre as "nombre", t2.usu_nombre as "usuario" FROM cita AS t1 
 INNER JOIN usuarios AS t2 ON t1.cit_datosUsuario = t2.usu_id 
 INNER JOIN medico AS t3 ON t1.cit_medico = t3.med_nroMatriculaProsional
 INNER JOIN consultorio AS t4 ON t3.med_consultorio = t4.cons_codigo
-WHERE t2.usu_id = 1 AND t1.cit_estado = 1;
+WHERE t2.usu_id = ${req.params.id} AND t1.cit_estado = 4 OR t1.cit_estado = 2;
     `;
 
       const [pacientes_all_desc] = await connection.execute(
@@ -261,7 +261,7 @@ WHERE t2.usu_id = 1 AND t1.cit_estado = 1;
       );
 
       let obj = {
-        mensaje: "cantidad de Citas",
+        mensaje: "Citas finalizadas o canceladas por usuario",
         data: pacientes_all_desc,
       };
 
@@ -294,7 +294,7 @@ router.get("/usuarios/genero/:id", Validar_id, async (req, res) => {
     );
 
     let obj = {
-      mensaje: "cantidad de Citas",
+      mensaje: "Usuario por genero",
       data: pacientes_all_desc,
     };
 
@@ -390,7 +390,7 @@ router.get("/canceladas/mes/:id/year/:year", async (req, res) => {
     );
 
     let obj = {
-      mensaje: "cantidad de Citas",
+      mensaje: `Citas en el mes ${month + 1} del año ${year}`,
       data: pacientes_all_desc,
     };
 
